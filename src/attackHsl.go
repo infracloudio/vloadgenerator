@@ -2,9 +2,9 @@ package src
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/infracloudio/vloadgenerator/src/types"
@@ -24,7 +24,6 @@ func GenerateHSLAttack(appConfig *types.AppConfig) {
 	targetType := []func(){
 		accountPOSTRequest(appConfig.URL, &targets),
 		customerPOSTRequest(appConfig.URL, &targets),
-		patientPOSTRequest(appConfig.URL, &targets),
 		generateGETRequests(appConfig.URL, &targets),
 	}
 
@@ -57,6 +56,7 @@ func accountPOSTRequest(url string, targets *[]vegeta.Target) func() {
 		account := generateRandomAccount()
 		log.WithFields(log.Fields{"Account: ": account}).Debug()
 		body, err := json.Marshal(account)
+
 		check(err)
 		var header = make(http.Header)
 		header.Add("content-type", "application/json")
@@ -91,68 +91,6 @@ func customerPOSTRequest(url string, targets *[]vegeta.Target) func() {
 		addValue(targets, target)
 	}
 
-}
-
-func patientPOSTRequest(url string, targets *[]vegeta.Target) func() {
-
-	return func() {
-		patient := generateRandomPatient()
-		log.WithFields(log.Fields{"Patient: ": patient}).Debug()
-		body, err := json.Marshal(patient)
-		check(err)
-		var header = make(http.Header)
-		header.Add("content-type", "application/json")
-
-		target := vegeta.Target{
-			Method: http.MethodPost,
-			URL:    url + "/patients",
-			Body:   body,
-			Header: header,
-		}
-
-		addValue(targets, target)
-	}
-}
-
-func GenerateLoadData(count int, duration int, api string) {
-
-	numberOfTargets := count * duration
-
-	fmt.Println("Generating LoadData for number of requests", count, api)
-	var targets []vegeta.Target
-	// targets := make([]vegeta.Target, numberOfTargets)
-
-	rand.Seed(time.Now().UnixNano())
-	ftype := []func(){generateAccounts(api, &targets), generateGETRequests(api, &targets)}
-
-	for index := 0; index < numberOfTargets; index++ {
-		generator := ftype[rand.Intn(len(ftype))]
-		generator()
-	}
-
-	log.WithFields(log.Fields{"Number of targets generated": len(targets)}).Debug()
-
-	rate := uint64(count) // per second
-	du := time.Duration(duration) * time.Second
-
-	for index := 0; index < len(targets); index++ {
-		fmt.Println(string(targets[index].Body), targets[index].URL)
-	}
-
-	attacker := vegeta.NewAttacker()
-
-	var metrics vegeta.Metrics
-	for res := range attacker.Attack(vegeta.NewStaticTargeter(targets...), rate, du, "abc") {
-		fmt.Println(res.Error)
-		metrics.Add(res)
-	}
-	metrics.Close()
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 func generateAccounts(api string, targets *[]vegeta.Target) func() {
@@ -203,12 +141,10 @@ func generateGETRequests(url string, targets *[]vegeta.Target) func() {
 		}
 		addValue(targets, target)
 	}
-
 }
 
 func addValue(s *[]vegeta.Target, target vegeta.Target) {
 	*s = append(*s, target)
-	// fmt.Printf("In addValue: s is %v\n", s)
 }
 
 func generateRandomAccount() types.Account {
@@ -221,47 +157,30 @@ func generateRandomAccount() types.Account {
 	return account
 }
 
-func generateRandomPatient() types.Patient {
-	var patient types.Patient
-	patient.FirstName = "Agent"
-	patient.LastName = "Jay"
-	patient.DateOfBirth = "21-11-1973"
-	patient.HeartRate = rand.Intn(120)
-	patient.Height = rand.Intn(200)
-	patient.Weight = rand.Intn(500)
-	patient.PulseRate = rand.Intn(200)
-	patient.BloodPressure = rand.Intn(200)
-	patient.BodyTemparature = rand.Intn(100)
-	patient.Medications = "combiflam,crocin,dolo,lanzol"
-
-	return patient
-}
-
 func generateRandomCustomer() types.Customer {
 	var customer types.Customer
-	customer.FirstName = "Agent"
-	customer.LastName = "Kay"
-	customer.DateOfBirth = "13-07-1963"
+	customer.CustomerID = rand.Intn(50000)
+	customer.ClientID = rand.Intn(50000)
+	customer.FirstName = "Agent-" + strconv.Itoa(rand.Intn(2000))
+	customer.LastName = "K-" + strconv.Itoa(rand.Intn(2000))
+	customer.DateOfBirth = "1963-10-27"
 	customer.PhoneNumber = "123456"
-	customer.SocialInsuranceNumber = "1234"
-	customer.Ssn = "1234ssn"
-	customer.Tin = "1234tin"
+	customer.SocialInsuranceNumber = "1234" + strconv.Itoa(rand.Intn(200))
+	customer.Ssn = "1234ssn" + strconv.Itoa(rand.Intn(200))
+	customer.Tin = "1234tin" + strconv.Itoa(rand.Intn(200))
 	customer.Address = types.Address{
 		Address1: "EC",
 		City:     "Bangalore",
 		State:    "Kar",
 	}
-	customer.Accounts = types.Accounts{
-		Accounts: []types.Account{
-			types.Account{
-				AccountNumber: 312,
-				Balance:       120000,
-				Interest:      5,
-				RoutingNumber: 456,
-				Type:          "SAVING",
-			},
+	customer.Accounts = []types.Account{
+		types.Account{
+			AccountNumber: rand.Intn(200),
+			Balance:       rand.Intn(20000),
+			Interest:      rand.Intn(20),
+			RoutingNumber: rand.Intn(900),
+			Type:          "SAVING",
 		},
 	}
-
 	return customer
 }
