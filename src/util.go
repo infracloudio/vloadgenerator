@@ -28,3 +28,9 @@ func contains(a []string, x string) bool {
 	}
 	return false
 }
+
+func check(err error) {
+	if err != nil {
+		panic(err)
+	}
+}

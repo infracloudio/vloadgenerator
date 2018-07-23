@@ -1,7 +1,6 @@
 package src
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/infracloudio/vloadgenerator/src/types"
@@ -27,7 +26,7 @@ func Attack(appConfig *types.AppConfig) {
 	err := sanityCheck(appConfig)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Fatal(err.Error())
 		os.Exit(1)
 	}
 

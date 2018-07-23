@@ -1,9 +1,5 @@
 package types
 
-type Accounts struct {
-	Accounts []Account
-}
-
 type Account struct {
 	Type          string `json:"type"`
 	RoutingNumber int    `json:"routingNumber"`
@@ -26,15 +22,17 @@ type Patient struct {
 }
 
 type Customer struct {
-	FirstName             string   `json:"firstName"`
-	LastName              string   `json:"lastName"`
-	DateOfBirth           string   `json:"dateOfBirth"`
-	Ssn                   string   `json:"ssn"`
-	SocialInsuranceNumber string   `json:"socialInsurancenum"`
-	Tin                   string   `json:"tin"`
-	PhoneNumber           string   `json:"phoneNumber"`
-	Address               Address  `json:"address"`
-	Accounts              Accounts `json:"accounts"`
+	CustomerID            int       `json:"customerId"`
+	ClientID              int       `json:"clientId"`
+	FirstName             string    `json:"firstName"`
+	LastName              string    `json:"lastName"`
+	DateOfBirth           string    `json:"dateOfBirth"`
+	Ssn                   string    `json:"ssn"`
+	SocialInsuranceNumber string    `json:"socialInsurancenum"`
+	Tin                   string    `json:"tin"`
+	PhoneNumber           string    `json:"phoneNumber"`
+	Address               Address   `json:"address"`
+	Accounts              []Account `json:"accounts"`
 }
 
 type Address struct {
