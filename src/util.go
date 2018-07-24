@@ -3,6 +3,7 @@ package src
 import (
 	"fmt"
 	"net"
+	"net/http"
 	"net/url"
 	"time"
 
@@ -53,8 +54,14 @@ func testConnectivity(s string) error {
 		for {
 			conn, err = net.Dial("tcp", net.JoinHostPort(u.Hostname(), u.Port()))
 			if conn != nil {
-				conn.Close()
-				break
+				var netClient = &http.Client{
+					Timeout: time.Second * 10,
+				}
+				_, err := netClient.Get(s)
+				if err == nil {
+					conn.Close()
+					break
+				}
 			}
 			// wait 5 seconds before retrying.
 			time.Sleep(5 * time.Second)
@@ -67,7 +74,7 @@ func testConnectivity(s string) error {
 	case _ = <-c:
 		log.Debug("Connection established")
 		return nil
-	case <-time.After(2 * time.Minute):
+	case <-time.After(3 * time.Minute):
 		return fmt.Errorf("Could not establish connection")
 	}
 }
