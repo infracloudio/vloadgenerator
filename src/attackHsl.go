@@ -22,9 +22,10 @@ func GenerateHSLAttack(appConfig *types.AppConfig) {
 	numberOfTargets = appConfig.Rate * appConfig.Duration
 
 	targetType := []func(){
-		accountPOSTRequest(appConfig.URL, &targets),
+		// accountPOSTRequest(appConfig.URL, &targets),
 		customerPOSTRequest(appConfig.URL, &targets),
-		generateGETRequests(appConfig.URL, &targets),
+		// patientPOSTRequest(appConfig.URL, &targets),
+		// generateGETRequests(appConfig.URL, &targets),
 	}
 
 	for index := 0; index < numberOfTargets; index++ {
@@ -36,6 +37,7 @@ func GenerateHSLAttack(appConfig *types.AppConfig) {
 	log.WithFields(log.Fields{"Number of targets generated": len(targets)}).Debug()
 
 	attacker = vegeta.NewAttacker()
+	var results vegeta.Results
 
 	for res := range attacker.Attack(
 		vegeta.NewStaticTargeter(targets...),
@@ -43,11 +45,12 @@ func GenerateHSLAttack(appConfig *types.AppConfig) {
 		time.Duration(appConfig.Duration)*time.Second,
 		"HSL attack") {
 
-		log.Debug(res.Error)
 		metrics.Add(res)
+		results.Add(res)
 	}
+	generatePlotReport(&results)
+	generateTextReport(&metrics)
 	metrics.Close()
-	log.WithFields(log.Fields{"99th percentile": metrics.Latencies.P99, "rate": metrics.Rate, "requests": metrics.Requests, "duration": metrics.Duration}).Info()
 }
 
 func accountPOSTRequest(url string, targets *[]vegeta.Target) func() {
