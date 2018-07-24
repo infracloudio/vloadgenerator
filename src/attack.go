@@ -40,6 +40,7 @@ func Attack(appConfig *types.AppConfig) {
 	//var targets []vegeta.Target
 
 	if appConfig.Name == "hsl" {
+		appConfig.URL = "http://localhost:8081"
 		GenerateHSLAttack(appConfig)
 	}
 
@@ -48,6 +49,7 @@ func Attack(appConfig *types.AppConfig) {
 	}
 
 	if appConfig.Name == "jenkins" {
-
+		appConfig.URL = "http://localhost:8080"
+		GenerateJenkinsAttack(appConfig)
 	}
 }

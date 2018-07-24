@@ -6,8 +6,13 @@ import (
 	"net/url"
 	"time"
 
+	"encoding/base64"
+	"encoding/hex"
+
 	"github.com/infracloudio/vloadgenerator/src/types"
 	log "github.com/sirupsen/logrus"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 func sanityCheck(appConfig *types.AppConfig) error {
@@ -19,7 +24,6 @@ func sanityCheck(appConfig *types.AppConfig) error {
 	if appConfig.Rate <= 0 || appConfig.Duration <= 0 {
 		return fmt.Errorf("Rate / Duration cannot be zero or negative")
 	}
-
 	return nil
 }
 
@@ -70,4 +74,14 @@ func testConnectivity(s string) error {
 	case <-time.After(2 * time.Minute):
 		return fmt.Errorf("Could not establish connection")
 	}
+}
+func generateUUID() string {
+	u1 := uuid.Must(uuid.NewV4())
+	s := hex.EncodeToString(u1.Bytes()[:4])
+	return s
+}
+
+func basicAuth(username, password string) string {
+	auth := username + ":" + password
+	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
