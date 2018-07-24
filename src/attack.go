@@ -30,6 +30,12 @@ func Attack(appConfig *types.AppConfig) {
 		os.Exit(1)
 	}
 
+	err = testConnectivity(appConfig.URL)
+	if err != nil {
+		log.Fatal(err.Error())
+		os.Exit(1)
+	}
+
 	// List of targets to be exercised , whether thats GET or POST
 	//var targets []vegeta.Target
 
