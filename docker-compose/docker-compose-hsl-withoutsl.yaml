@@ -11,3 +11,5 @@ services:
   command: 'attack -u http://hsl-sl:8081 -n ${FREQUENCY} -d ${DURATION}'
   depends_on:
    - hsl-sl
+  volumes:
+    - /tmp:/app/report

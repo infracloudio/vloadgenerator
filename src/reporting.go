@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	vegeta "github.com/tsenart/vegeta/lib"
 )
 
@@ -30,6 +31,7 @@ func generatePlotReport(results *vegeta.Results) {
 	plotReporter := vegeta.NewPlotReporter("load-test-hsl-"+loadTest, results)
 	err := plotReporter(&b)
 	check(err)
+	log.WithFields(log.Fields{"report": "load-test-hsl-" + loadTest}).Info("Generating the report :")
 
 	f, err := os.Create("report/load-test-hsl-" + loadTest + ".html")
 	check(err)

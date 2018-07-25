@@ -42,7 +42,7 @@ func check(err error) {
 
 func testConnectivity(s string) error {
 	var conn net.Conn
-	log.Debug("Testing connectivity to app before starting the test.")
+	log.Info("Testing connectivity to app before starting the test.")
 
 	u, err := url.Parse(s)
 	if err != nil {
