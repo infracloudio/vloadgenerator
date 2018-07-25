@@ -34,7 +34,7 @@ func GenerateHSLAttack(appConfig *types.AppConfig) {
 		createTarget()
 	}
 
-	log.WithFields(log.Fields{"Number of targets generated": len(targets)}).Debug()
+	log.WithFields(log.Fields{"Number of targets generated": len(targets)}).Info()
 
 	attacker = vegeta.NewAttacker()
 	var results vegeta.Results

@@ -9,11 +9,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o vloadgenerator .
 
 FROM alpine
 MAINTAINER Imran Pochi <imran@infracloud.io>
-RUN adduser -S -D -H -h /app appuser
-USER appuser
-
+RUN mkdir -p /app/report
 COPY --from=builder /go/src/github.com/infracloudio/vloadgenerator/vloadgenerator /app/vloadgenerator
-
 WORKDIR /app
-
 ENTRYPOINT ["./vloadgenerator"]
