@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+ hsl-sl:
+  image: infracloud/hsl-withsl:v1
+  ports:
+   - 8081:8081
+
+ vloadgenerator:
+  image: infracloud/vloadgenerator:v1
+  command: 'attack -u http://hsl-sl:8081 -n ${FREQUENCY} -d ${DURATION}'
+  depends_on:
+   - hsl-sl
