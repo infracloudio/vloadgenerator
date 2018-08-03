@@ -22,9 +22,10 @@ func GenerateHSLAttack(appConfig *types.AppConfig) {
 	numberOfTargets = appConfig.Rate * appConfig.Duration
 
 	targetType := []func(){
-		accountPOSTRequest(appConfig.URL, &targets),
+		// accountPOSTRequest(appConfig.URL, &targets),
 		customerPOSTRequest(appConfig.URL, &targets),
-		generateGETRequests(appConfig.URL, &targets),
+		// patientPOSTRequest(appConfig.URL, &targets),
+		// generateGETRequests(appConfig.URL, &targets),
 	}
 
 	for index := 0; index < numberOfTargets; index++ {
